@@ -44,7 +44,6 @@ SECRET_KEY = os.environ['DJAGNO_SECRET']
 =======
 >>>>>>> 5e690f8 (chore : settings.py secretkey 참조 수정)
 
-
 # Application definition
 
 INSTALLED_APPS = [
