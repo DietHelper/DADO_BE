@@ -39,6 +39,20 @@ ALLOWED_HOSTS = []
 
 SECRET_KEY = os.environ['DJAGNO_SECRET']
 
+<<<<<<< HEAD
+=======
+
+SECRET_KEY = os.environ['DJAGNO_SECRET']
+
+<<<<<<< HEAD
+=======
+
+<<<<<<< HEAD
+>>>>>>> 5e690f8 (chore : settings.py secretkey 참조 수정)
+
+=======
+>>>>>>> f64db86 (chore : settings.py secretkey 경로 수정)
+>>>>>>> 920e502 (chore : settings.py secretkey 참조 수정)
 # Application definition
 
 INSTALLED_APPS = [
