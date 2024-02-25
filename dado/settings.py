@@ -42,8 +42,8 @@ SECRET_KEY = os.environ['DJAGNO_SECRET']
 <<<<<<< HEAD
 =======
 
-SECRET_KEY = os.environ['DJAGNO_SECRET']
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 =======
 
@@ -53,6 +53,8 @@ SECRET_KEY = os.environ['DJAGNO_SECRET']
 =======
 >>>>>>> f64db86 (chore : settings.py secretkey 경로 수정)
 >>>>>>> 920e502 (chore : settings.py secretkey 참조 수정)
+=======
+>>>>>>> 3f14781 (chore : settings.py secretkey 경로 수정)
 # Application definition
 
 INSTALLED_APPS = [
