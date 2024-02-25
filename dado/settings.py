@@ -39,7 +39,6 @@ ALLOWED_HOSTS = []
 
 SECRET_KEY = os.environ['DJAGNO_SECRET']
 
-
 # Application definition
 
 INSTALLED_APPS = [
