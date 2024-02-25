@@ -36,6 +36,9 @@ ALLOWED_HOSTS = []
 
 SECRET_KEY = os.environ['DJAGNO_SECRET']
 
+
+SECRET_KEY = os.environ['DJAGNO_SECRET']
+
 <<<<<<< HEAD
 =======
 
