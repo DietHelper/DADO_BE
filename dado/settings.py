@@ -37,6 +37,8 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+
+
 SECRET_KEY = os.environ['DJAGNO_SECRET']
 
 
