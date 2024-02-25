@@ -21,6 +21,12 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class ProfileSerializer(serializers.ModelSerializer):
+    email = serializers.CharField(source='user.email', read_only=True)
+    # is_following = serializers.SerializerMethodField() 질문
     class Meta:
         model = Profile
-        fields = ['']
+        fields = ['id', 'nickname', 'age', 'gneder', 'height', 'start_weight', 'goal_weight', 'about']
+
+
+
+        

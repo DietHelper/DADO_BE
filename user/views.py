@@ -1,11 +1,12 @@
 from django.shortcuts import render
-from django.contrib.auth import authenticate
+from django.contrib.auth import authenticate, logout
 from rest_framework.response import Response
 from rest_framework import status
-from .models import User
+from .models import User, Profile
 from rest_framework.views import APIView
+from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
-from .serializers import UserSerializer
+from .serializers import UserSerializer, ProfileSerializer
 from rest_framework_simplejwt.tokens import RefreshToken
 import requests
 
@@ -26,9 +27,37 @@ class Join(APIView):
         if serializer.is_valid():
             user = serializer.save()
 
-            users_data = {
+            profile = Profile.objects.get(user=user)
+
+            nickname = request.data.get('nickname')
+            age = request.data.get('age')
+            gender = request.data.get('gender')
+            height = request.data.get('height')
+            start_weight = request.data.get('start_weight')
+            goal_weight = request.data.get('goal_weight')
+            about = request.data.get('about')
+
+            profile_data = {
                 "user": user.id,
+                "nickname": nickname,
+                "age": age,
+                "gender": gender,
+                "height": height,
+                "start_weight": start_weight,
+                "goal_weight": goal_weight,
+                "about": about
             }
+
+            if not (nickname and age and gender and height and start_weight and goal_weight and about):
+                user.delete()
+                return Response({"error":"프로필 정보를 입력해주세요."},status=status.HTTP_400_BAD_REQUEST)
+
+            pf_serializer = ProfileSerializer(profile, profile_data)
+
+            if pf_serializer.is_valid():
+                pf_serializer.save()
+            else:
+                return Response(pf_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
             token = RefreshToken.for_user(user)
             access_token = str(token.access_token)
@@ -36,7 +65,7 @@ class Join(APIView):
 
             message = {
                 "message": "회원가입 성공",
-                "user": users_data,
+                "user": pf_serializer.data,
                 "token": {
                     "access": access_token,
                     "refresh": refresh_token,
@@ -46,8 +75,6 @@ class Join(APIView):
             return Response(message, status=status.HTTP_200_OK)
     
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
 
 class Login(APIView):
     def post(self, request):
@@ -75,5 +102,16 @@ class Login(APIView):
                 status=status.HTTP_200_OK,
             )
             return res
-        else : 
-            return Response({"error" : "이메일 또는 비밀번로가 일치하지 않습니다."}, status=status.HTTP_401_UNAUTHORIZED)
+        else: 
+            return Response({"error" : "이메일 또는 비밀번호가 일치하지 않습니다."}, status=status.HTTP_401_UNAUTHORIZED)
+        
+
+class Logout(APIView):
+    permission_classes = [IsAuthenticated]
+    def post(self, request):
+        user = request.user
+        refresh_token = RefreshToken.for_user(user)
+        refresh_token.blacklist()
+        logout(request)
+        return Response({"message":"로그아웃 성공"},status=status.HTTP_200_OK)
+

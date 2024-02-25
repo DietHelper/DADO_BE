@@ -28,7 +28,6 @@ class UserManager(BaseUserManager):
         user = self.create_user(email, password=password,is_superuser=True, is_staff=True)
         return user
 
-
 class User(AbstractUser, PermissionsMixin):
     username = None
     email = models.EmailField(unique=True, max_length=255)
@@ -49,7 +48,6 @@ class User(AbstractUser, PermissionsMixin):
     def __str__(self):
         return self.email
 
-
 class Profile(models.Model):
     user = models.OneToOneField('User', on_delete=models.CASCADE)
     profileImage = models.FileField(null=True, blank=True)
@@ -64,7 +62,6 @@ class Profile(models.Model):
     is_active = models.BooleanField(default=True)
     updated_at = models.DateTimeField(auto_now=True)
     
-
 class Follower(models.Model):
     target_id = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name='target_id')
