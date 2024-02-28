@@ -1,5 +1,8 @@
 from django.shortcuts import render
 from django.contrib.auth import authenticate, logout
+from django.core.files.base import ContentFile
+from django.core.files.storage import default_storage
+from django.conf import settings
 from rest_framework.response import Response
 from rest_framework import status
 from .models import User, Profile
