@@ -19,15 +19,6 @@ class PostSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Post
-        fields = '__all__'
-    
-    def create(self, validated_data):
-        images_data = request.FILES.getlist('images')
-
-        fields = '__all__'
-    
-    def create(self, validated_data):
-        images_data = request.FILES.getlist('images')
         exclude = ['writer']
     
     def create(self, validated_data):
