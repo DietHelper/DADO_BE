@@ -26,7 +26,6 @@ class PostSerializer(serializers.ModelSerializer):
         
         for image_data in images_data:
             PostImage.objects.create(post=instance, image=image_data)
-
         return instance
 
 
