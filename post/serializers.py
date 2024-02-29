@@ -8,13 +8,10 @@ class PostImageSerializer(serializers.ModelSerializer):
 
 
 class PostSerializer(serializers.ModelSerializer):
-
     images = PostImageSerializer(many=True, read_only=True)
     
     # 게시글에 등록된 이미지 가지고 오기
 
-    images = PostImageSerializer(many=True, read_only=True)
-    
 
     def get_images(self, obj):
         image = obj.image_set.all()
@@ -22,7 +19,6 @@ class PostSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Post
-
         fields = '__all__'
     
     def create(self, validated_data):
@@ -32,7 +28,10 @@ class PostSerializer(serializers.ModelSerializer):
     
     def create(self, validated_data):
         images_data = request.FILES.getlist('images')
-
+        exclude = ['writer']
+    
+    def create(self, validated_data):
+        images_data = self.context['request'].FILES.getlist('images')
         instance = Post.objects.create(**validated_data)
         
         for image_data in images_data:
