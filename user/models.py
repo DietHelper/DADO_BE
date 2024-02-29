@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser, BaseUserManager, PermissionsMixin
 from django.utils import timezone
+from django.db.models.signals import post_save
 
 # Create your models here.
 class UserManager(BaseUserManager):
@@ -61,6 +62,13 @@ class Profile(models.Model):
     about = models.TextField(default='자신을 소개해주세요 :)', null=True, blank=True)
     is_active = models.BooleanField(default=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+def user_join(sender, **kwargs):
+    if kwargs['created']:
+        user = kwargs['instance']
+        Profile.objects.create(user=user)
+
+post_save.connect(user_join, sender=User)
     
 class Follower(models.Model):
     target_id = models.ForeignKey(

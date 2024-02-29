@@ -22,10 +22,11 @@ class UserSerializer(serializers.ModelSerializer):
 
 class ProfileSerializer(serializers.ModelSerializer):
     email = serializers.CharField(source='user.email', read_only=True)
-    # is_following = serializers.SerializerMethodField() 질문
+    # is_following = serializers.SerializerMethodField()
+
     class Meta:
         model = Profile
-        fields = ['id', 'nickname', 'age', 'gneder', 'height', 'start_weight', 'goal_weight', 'about']
+        fields = ['id', 'profileImage', 'nickname', 'age', 'gender', 'height', 'start_weight', 'goal_weight', 'about', 'email']
 
 
 
