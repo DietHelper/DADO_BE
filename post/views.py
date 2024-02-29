@@ -11,7 +11,6 @@ import uuid
 import os
 from django.http import JsonResponse
 from .uploads import S3ImgUploader
-import json
 
 User = get_user_model()
 
