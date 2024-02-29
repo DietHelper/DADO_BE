@@ -11,12 +11,10 @@ import uuid
 import os
 from django.http import JsonResponse
 from .uploads import S3ImgUploader
-import json
 
 User = get_user_model()
 
-
-class PostIndex(APIView):
+class Index(APIView):
     def get(self, request):
         posts = Post.objects.all()
         serializer = PostSerializer(posts, many=True)
