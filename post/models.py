@@ -22,8 +22,13 @@ class Post(models.Model):
 
 class PostImage(models.Model):
     id = models.AutoField(primary_key=True)
+<<<<<<< HEAD
     post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='images', null=True)
     image = models.CharField(max_length=100)
+=======
+    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='image')
+    image = models.FileField()
+>>>>>>> 636c424 (feat : s3 연동 설정 및 uploads.py 코드 추가)
 
     def __int__(self):
         return self.id
