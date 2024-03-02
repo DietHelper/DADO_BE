@@ -51,7 +51,7 @@ class User(AbstractUser, PermissionsMixin):
 
 class Profile(models.Model):
     user = models.OneToOneField('User', on_delete=models.CASCADE)
-    profileImage = models.FileField(null=True, blank=True)
+    image = models.CharField(max_length=100)
     nickname = models.CharField(
         default='닉네임', max_length=50, null=True, blank=True)
     age = models.CharField(max_length=50)

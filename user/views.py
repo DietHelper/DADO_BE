@@ -1,4 +1,5 @@
 from django.shortcuts import render
+from post.uploads import S3ImgUploader
 from django.contrib.auth import authenticate, logout
 from django.core.files.base import ContentFile
 from django.core.files.storage import default_storage
@@ -12,9 +13,6 @@ from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from .serializers import UserSerializer, ProfileSerializer
 from rest_framework_simplejwt.tokens import RefreshToken
 import requests
-
-# Create your views here.
-
 
 
 class Join(APIView):
@@ -39,6 +37,14 @@ class Join(APIView):
             start_weight = request.data.get('start_weight')
             goal_weight = request.data.get('goal_weight')
             about = request.data.get('about')
+            
+            try:
+                image = request.FILES['image']
+            except:
+                is_image = False
+            else:
+                is_image = True
+
 
             profile_data = {
                 "user": user.id,
@@ -54,7 +60,13 @@ class Join(APIView):
             if not (nickname and age and gender and height and start_weight and goal_weight and about):
                 user.delete()
                 return Response({"error":"프로필 정보를 입력해주세요."},status=status.HTTP_400_BAD_REQUEST)
-
+            
+            if is_image:
+                img_uploader = S3ImgUploader(image)
+                folder = 'post_image'
+                uploaded_url = img_uploader.upload(folder)
+                profile_data['image'] = uploaded_url
+                
             pf_serializer = ProfileSerializer(profile, profile_data)
 
             if pf_serializer.is_valid():
