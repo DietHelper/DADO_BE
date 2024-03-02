@@ -23,7 +23,7 @@ class Post(models.Model):
 class PostImage(models.Model):
     id = models.AutoField(primary_key=True)
     post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='images', null=True)
-    image = models.FileField()
+    image = models.CharField(max_length=100)
 
     def __int__(self):
         return self.id
