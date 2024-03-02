@@ -15,6 +15,7 @@ import json
 
 User = get_user_model()
 
+
 class PostIndex(APIView):
     def get(self, request):
         posts = Post.objects.all()
