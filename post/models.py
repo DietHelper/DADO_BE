@@ -22,12 +22,12 @@ class Post(models.Model):
 
 class PostImage(models.Model):
     id = models.AutoField(primary_key=True)
-    post = models.ForeignKey(
-        Post, on_delete=models.CASCADE, related_name='image')
-    image = models.FileField()
+    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='images', null=True)
+    image = models.CharField(max_length=100)
 
     def __int__(self):
         return self.id
+    
 
     class Meta:
         db_table = 'post_image'
