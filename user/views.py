@@ -14,7 +14,10 @@ from .serializers import UserSerializer, ProfileSerializer
 from rest_framework_simplejwt.tokens import RefreshToken
 import requests
 
-# 자체 회원가입
+# Create your views here.
+
+
+
 class Join(APIView):
     def post(self, request):
         
