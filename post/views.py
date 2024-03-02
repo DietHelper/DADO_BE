@@ -22,7 +22,6 @@ class PostIndex(APIView):
         serializer = PostSerializer(posts, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-
 class PostCreate(APIView):
     def post(self, request):
         user = request.user
