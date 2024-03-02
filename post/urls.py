@@ -14,6 +14,9 @@ urlpatterns = [
 =======
     path('index/', views.PostIndex.as_view(), name='index'),
     path('postcreate/', views.PostCreate.as_view(), name='post_create'),
+<<<<<<< HEAD
     path('image/', views.PostImage.as_view(), name='image'),
 >>>>>>> 618a96b (feat : s3 연동 설정 및 다중 이미지 글 생성 기능 추가)
+=======
+>>>>>>> 1367670 (chore : 다중 이미지 글 생성 기능 수정)
 ]
