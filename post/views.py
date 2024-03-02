@@ -15,26 +15,13 @@ import json
 
 User = get_user_model()
 
+
 class PostIndex(APIView):
     def get(self, request):
         posts = Post.objects.all()
         serializer = PostSerializer(posts, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
     
-
-# 한개의 이미지만 s3에 올리기 성공
-class PostImage(APIView):
-    def post(self, request, format=None):
-        serializer = PostImageSerializer(data=request.data)
-        if serializer.is_valid():
-            image_file = request.data.get('image')
-            s3_uploader = S3ImgUploader(image_file)
-            folder = 'post_image'
-            url = s3_uploader.upload(folder)
-            serializer.save(image=url)
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
 
 class PostCreate(APIView):
     def post(self, request):
