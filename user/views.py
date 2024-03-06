@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from post.uploads import S3ImgUploader
 from django.contrib.auth import authenticate, logout
 from django.core.files.base import ContentFile
@@ -15,6 +15,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 import requests
 
 
+# 회원가입
 class Join(APIView):
     def post(self, request):
         
@@ -91,6 +92,7 @@ class Join(APIView):
     
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+# 로그인
 class Login(APIView):
     def post(self, request):
         email = request.data.get('email')
@@ -121,6 +123,7 @@ class Login(APIView):
             return Response({"error" : "이메일 또는 비밀번호가 일치하지 않습니다."}, status=status.HTTP_401_UNAUTHORIZED)
         
 
+# 로그아웃
 class Logout(APIView):
     permission_classes = [IsAuthenticated]
     def post(self, request):
@@ -130,3 +133,23 @@ class Logout(APIView):
         logout(request)
         return Response({"message":"로그아웃 성공"},status=status.HTTP_200_OK)
 
+
+# 프로필 조회
+class ProfileView(APIView):
+    permission_classes = [IsAuthenticated]
+    def get(self, request, user_id=None):
+        if user_id is None:
+            user = request.user
+        else:
+            user = get_object_or_404(User, pk=user_id)
+        profile = get_object_or_404(Profile, user=user)
+        pf_serializer = ProfileSerializer(profile, context={'request':request})
+
+        profile_data = pf_serializer.data
+        profile_data['image'] = profile.image
+
+        data = {
+            "profile": profile_data
+        }
+
+        return Response(data, status=status.HTTP_200_OK)
