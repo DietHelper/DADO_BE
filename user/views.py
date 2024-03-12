@@ -6,6 +6,7 @@ from django.core.files.storage import default_storage
 from django.conf import settings
 from rest_framework.response import Response
 from rest_framework import status
+from rest_framework.parsers import MultiPartParser, FormParser
 from .models import User, Profile
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
@@ -153,3 +154,26 @@ class ProfileView(APIView):
         }
 
         return Response(data, status=status.HTTP_200_OK)
+
+
+# 프로필 수정
+class ProfileEdit(APIView):
+    permission_classes = [IsAuthenticated]
+    parser_classes = (MultiPartParser, FormParser)
+    def put(self, request):
+        profile = request.user.profile
+        serializer = ProfileSerializer(profile, data=request.data)
+
+        if 'image' in request.FILES:
+            image_file = request.FILES['image']
+            uploader = S3ImgUploader(image_file)
+            image_url = uploader.upload('profile')
+            profile.image = image_url
+            profile.save()
+
+        if serializer.is_valid():
+            serializer.save()
+            return Response({"message": "프로필 수정 완료"}, status=status.HTTP_200_OK)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
