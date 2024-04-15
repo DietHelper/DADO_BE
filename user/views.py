@@ -11,7 +11,7 @@ from .models import User, Profile
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
-from .serializers import UserSerializer, ProfileSerializer
+from .serializers import UserSerializer, ProfileSerializer, ChangePasswordSerializer
 from rest_framework_simplejwt.tokens import RefreshToken
 from .utils import generate_otp, send_otp_via_email
 import requests
@@ -151,6 +151,22 @@ class GenerateOtp(APIView):
             return Response(data=response, status=status.HTTP_200_OK)
         else:
             return Response({'error': '이미 가입된 사용자입니다.'}, status=status.HTTP_400_BAD_REQUEST)
+
+
+# 비밀번호 변경
+class ChangePassword(APIView):
+    permission_classes = [IsAuthenticated]
+    def put (self, request):
+        serializer = ChangePasswordSerializer(data=request.data)
+
+        if serializer.is_valid():
+            if not request.user.check_password(serializer.validated_data['old_password']):
+                return Response({"error":"현재 비밀번호가 일치하지 않습니다."}, status=status.HTTP_400_BAD_REQUEST)
+            
+            request.user.set_password(serializer.validated_data['new_password'])
+            request.user.save()
+
+            return Response({"messsge":"비밀번호가 성공적으로 변경되었습니다."}, status=status.HTTP_200_OK)
 
 
 
