@@ -13,5 +13,6 @@ urlpatterns = [
     path('otp/', views.GenerateOtp.as_view(), name='otp'),
     # path('profile/<int:user_id>/', views.ProfileView.as_view(), name='profile-detail'),
     path('profile-edit/', views.ProfileEdit.as_view(), name='profile-edit'),
+    path('<int:user_id>/follow/', views.Follow.as_view(), name='follow'),
 ]
 
