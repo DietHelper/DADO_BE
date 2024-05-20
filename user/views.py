@@ -7,7 +7,7 @@ from django.conf import settings
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.parsers import MultiPartParser, FormParser
-from .models import User, Profile
+from .models import User, Profile, Follower
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
@@ -212,3 +212,16 @@ class ProfileEdit(APIView):
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         
+
+# 팔로우
+class Follow(APIView):
+    permission_classes = [IsAuthenticated]
+    def post(self, request, user_id):
+        target_user = get_object_or_404(User, pk=user_id)
+        if request.user == target_user:
+            return Response({"error" : "본인을 팔로우할 수 없습니다."}, status=status.HTTP_400_BAD_REQUEST)
+        _,created = Follower.objects.get_or_create(target_id=target_user, follower_id=request.user)
+        if created:
+            return Response({"message":"팔로우 성공"}, status=status.HTTP_201_CREATED)
+        else:
+            return Response({"error":"이미 팔로우한 사용자입니다."}, status=status.HTTP_400_BAD_REQUEST)
