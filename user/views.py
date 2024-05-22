@@ -225,3 +225,13 @@ class Follow(APIView):
             return Response({"message":"팔로우 성공"}, status=status.HTTP_201_CREATED)
         else:
             return Response({"error":"이미 팔로우한 사용자입니다."}, status=status.HTTP_400_BAD_REQUEST)
+        
+
+# 언팔로우
+class UnFollow(APIView):
+    permission_classes = [IsAuthenticated]
+    def delete(self, request, user_id):
+        target_user = get_object_or_404(User, pk=user_id)
+        follow_reaction = get_object_or_404(Follower, target_id=target_user, follower_id=request.user)
+        follow_reaction.delete()
+        return Response({"message":"언팔로우 성공"}, status=status.HTTP_204_NO_CONTENT)
