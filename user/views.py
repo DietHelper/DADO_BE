@@ -11,7 +11,7 @@ from .models import User, Profile, Follower
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
-from .serializers import UserSerializer, ProfileSerializer, ChangePasswordSerializer
+from .serializers import UserSerializer, ProfileSerializer, ChangePasswordSerializer, FollowerSerializer
 from rest_framework_simplejwt.tokens import RefreshToken
 from .utils import generate_otp, send_otp_via_email
 import requests
@@ -235,3 +235,13 @@ class UnFollow(APIView):
         follow_reaction = get_object_or_404(Follower, target_id=target_user, follower_id=request.user)
         follow_reaction.delete()
         return Response({"message":"언팔로우 성공"}, status=status.HTTP_204_NO_CONTENT)
+    
+
+# 팔로우 목록 조회
+class FollowerList(APIView):
+    permission_classes = [IsAuthenticated]
+    def get(self, request, user_id):
+        user = get_object_or_404(User, pk=user_id)
+        followers = [follower.follower_id for follower in user.followers.all()]
+        serializer = FollowerSerializer(followers, many=True, context={'request' : request})
+        return Response({'follower_list' : serializer.data}, status=status.HTTP_200_OK)
