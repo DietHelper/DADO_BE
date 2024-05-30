@@ -1,6 +1,7 @@
 from django.shortcuts import render, get_object_or_404
 from post.uploads import S3ImgUploader
 from django.contrib.auth import authenticate, logout
+from django.contrib.auth.hashers import check_password
 from django.core.files.base import ContentFile
 from django.core.files.storage import default_storage
 from django.conf import settings
@@ -93,6 +94,28 @@ class Join(APIView):
             return Response(message, status=status.HTTP_200_OK)
     
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+# 회원탈퇴
+class Withdrawal(APIView):
+    permission_classes = [IsAuthenticated]
+    def delete(self, request):
+        user = request.user
+        provided_password = request.data.get('password', None)
+        if not provided_password or not check_password(provided_password, user.password):
+            return Response({"error":"비밀번호가 정확하지 않습니다."}, status=status.HTTP_400_BAD_REQUEST)
+        
+        refresh_token = RefreshToken.for_user(user)
+        refresh_token.blacklist()
+
+        profile = user.profile
+        profile.name = f'deleteuser_{profile.id}'
+        profile.save()
+
+        user.is_active = False
+        user.save()
+
+        return Response({"message":"회원탈퇴 되었습니다."}, status=status.HTTP_200_OK)
+
 
 # 로그인
 class Login(APIView):
