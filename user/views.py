@@ -1,6 +1,7 @@
 from django.shortcuts import render, get_object_or_404
 from post.uploads import S3ImgUploader
 from django.contrib.auth import authenticate, logout
+from django.contrib.auth.hashers import check_password
 from django.core.files.base import ContentFile
 from django.core.files.storage import default_storage
 from django.conf import settings
@@ -11,7 +12,7 @@ from .models import User, Profile, Follower
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
-from .serializers import UserSerializer, ProfileSerializer, ChangePasswordSerializer
+from .serializers import UserSerializer, ProfileSerializer, ChangePasswordSerializer, FollowerSerializer
 from rest_framework_simplejwt.tokens import RefreshToken
 from .utils import generate_otp, send_otp_via_email
 import requests
@@ -93,6 +94,28 @@ class Join(APIView):
             return Response(message, status=status.HTTP_200_OK)
     
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+# 회원탈퇴
+class Withdrawal(APIView):
+    permission_classes = [IsAuthenticated]
+    def delete(self, request):
+        user = request.user
+        provided_password = request.data.get('password', None)
+        if not provided_password or not check_password(provided_password, user.password):
+            return Response({"error":"비밀번호가 정확하지 않습니다."}, status=status.HTTP_400_BAD_REQUEST)
+        
+        refresh_token = RefreshToken.for_user(user)
+        refresh_token.blacklist()
+
+        profile = user.profile
+        profile.name = f'deleteuser_{profile.id}'
+        profile.save()
+
+        user.is_active = False
+        user.save()
+
+        return Response({"message":"회원탈퇴 되었습니다."}, status=status.HTTP_200_OK)
+
 
 # 로그인
 class Login(APIView):
@@ -235,3 +258,13 @@ class UnFollow(APIView):
         follow_reaction = get_object_or_404(Follower, target_id=target_user, follower_id=request.user)
         follow_reaction.delete()
         return Response({"message":"언팔로우 성공"}, status=status.HTTP_204_NO_CONTENT)
+    
+
+# 팔로우 목록 조회
+class FollowerList(APIView):
+    permission_classes = [IsAuthenticated]
+    def get(self, request, user_id):
+        user = get_object_or_404(User, pk=user_id)
+        followers = [follower.follower_id for follower in user.followers.all()]
+        serializer = FollowerSerializer(followers, many=True, context={'request' : request})
+        return Response({'follower_list' : serializer.data}, status=status.HTTP_200_OK)

@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import User, Profile
+from .models import User, Profile, Follower
 
 
 
@@ -36,5 +36,18 @@ class ProfileSerializer(serializers.ModelSerializer):
         fields = ['id', 'image', 'nickname', 'age', 'gender', 'height', 'start_weight', 'goal_weight', 'about', 'email']
 
 
+class FollowerSerializer(serializers.ModelSerializer):
+    profile_image = serializers.CharField(source='profile.image')
+    nickname = serializers.CharField(source='profile.nickname')
+    is_following = serializers.SerializerMethodField()
+
+    class Meta:
+        model = User
+        fields  =['id', 'profile_image', 'nickname', 'is_following']
+
+    def get_is_following(self, obj):
+        #팔로잉 목록
+        request_user = self.context['request'].user
+        return Follower.objects.filter(follower_id=request_user, target_id=obj).exists()
 
         
