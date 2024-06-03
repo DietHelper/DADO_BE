@@ -3,6 +3,7 @@ from django.contrib.auth import get_user_model
 from rest_framework.response import Response
 from rest_framework import status
 from .models import Post, Comment, PostImage
+from rest_framework.permissions import IsAuthenticated
 from .serializers import PostSerializer, CommentSerializer, PostImageSerializer
 from django.shortcuts import render
 from dotenv import load_dotenv
@@ -17,6 +18,7 @@ User = get_user_model()
 
 
 class PostIndex(APIView):
+    permission_classes = [IsAuthenticated]
     def get(self, request):
         posts = Post.objects.all()
         serializer = PostSerializer(posts, many=True)
@@ -24,6 +26,7 @@ class PostIndex(APIView):
 
 
 class PostCreate(APIView):
+    permission_classes = [IsAuthenticated]
     def post(self, request):
         user = request.user
         post_data = {
@@ -46,3 +49,7 @@ class PostCreate(APIView):
             "message" : "글 생성 완료 "
         }
         return Response(data, status=status.HTTP_201_CREATED)
+    
+
+
+
