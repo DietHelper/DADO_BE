@@ -51,5 +51,29 @@ class PostCreate(APIView):
         return Response(data, status=status.HTTP_201_CREATED)
     
 
+class PostEdit(APIView):
+    permission_classes = [IsAuthenticated]
+    def put(self, request, pk):
+        post = Post.objects.get(id=pk)
 
+        post.title = request.data.get('title', post.title)
+        post.content = request.data.get('content', post.content)
+        post.save()
 
+        img_edit = request.data.get('img_edit')
+
+        if img_edit == 'true':
+            prev_img = PostImage.objects.filter(post-post)
+            prev_img.delete()
+
+            images = request.FILES.getlist('images')
+
+            for image in images:
+                img_uploader = S3ImgUploader(image)
+                uploaded_url = img_uploader.upload()
+                PostImage.objects.create(post=post, image=uploaded_url)
+
+        data = {
+            "message" : "글 수정 완료"
+        }
+        return Response(data, status=status.HTTP_200_OK)
