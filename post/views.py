@@ -4,6 +4,8 @@ from rest_framework.response import Response
 from rest_framework import status
 from .models import Post, Comment, PostImage
 from rest_framework.permissions import IsAuthenticated
+from django.core.exceptions import ObjectDoesNotExist
+from django.http import Http404
 from .serializers import PostSerializer, CommentSerializer, PostImageSerializer
 from django.shortcuts import render
 from dotenv import load_dotenv
@@ -77,3 +79,24 @@ class PostEdit(APIView):
             "message" : "글 수정 완료"
         }
         return Response(data, status=status.HTTP_200_OK)
+    
+
+class PostDelete(APIView):
+    permission_classes = [IsAuthenticated]
+    def delete(self, request, pk):
+        user = request.user
+        try: 
+            post = Post.objects.get(id=pk)
+        except ObjectDoesNotExist:
+            raise Http404
+        
+        images = post.image.all()
+
+        for image in images:
+            image.image.delete()
+            image.delete()
+
+        post.is_active = False
+        post.save()
+
+        return Response({"message":"게시물 삭제 완료"}, status=status.HTTP_200_OK)
